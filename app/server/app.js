@@ -13,7 +13,7 @@ const express = require('express');
 const logger = require('morgan');
 
 const app = express();
-const server = require('http').createServer(app);
+const server = require('http').Server(app);
 const favicon = require('serve-favicon');
 const io = require('socket.io')(server, config.socketio);
 const session = require('express-session')(config.express);
@@ -45,7 +45,7 @@ app.use(express.urlencoded({ extended: true }));
 app.post('/ssh/host/:host?', connect);
 app.post('/ssh', express.static(publicPath, config.express.ssh));
 app.use('/ssh', express.static(publicPath, config.express.ssh));
-app.use(basicAuth);
+// app.use(basicAuth);
 app.get('/ssh/reauth', reauth);
 app.get('/ssh/host/:host?', connect);
 app.use(notfound);
