@@ -8,30 +8,23 @@ const nodeRoot = path.dirname(require.main.filename);
 const publicPath = path.join(nodeRoot, 'client', 'public');
 const { parseBool } = require('./util');
 const config = require('./config');
-const shell= require('shelljs');
 
 exports.reauth = function reauth(req, res) {
-  console.log('reauth');
-  // let { referer } = req.headers;
-  // if (!validator.isURL(referer, { host_whitelist: ['localhost'] })) {
-  //   console.error(
-  //     `WebSSH2 (${req.sessionID}) ERROR: Referrer '${referer}' for '/reauth' invalid. Setting to '/' which will probably fail.`
-  //   );
-  //   referer = '/';
-  // }
-  // res
-  //   .status(401)
-  //   .send(
-  //     `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${referer}"></head><body bgcolor="#000"></body></html>`
-  //   );
+  let { referer } = req.headers;
+  if (!validator.isURL(referer, { host_whitelist: ['localhost'] })) {
+    console.error(
+      `WebSSH2 (${req.sessionID}) ERROR: Referrer '${referer}' for '/reauth' invalid. Setting to '/' which will probably fail.`
+    );
+    referer = '/';
+  }
+  res
+    .status(401)
+    .send(
+      `<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0; url=${referer}"></head><body bgcolor="#000"></body></html>`
+    );
 };
 
 exports.connect = function connect(req, res) {
-  // req.params.host = shell.exec('facter ' + req.params.host , {silent:true}).stdout;
-  // console.log(req.params.host);
-  req.session.username = req.query.user;
-  req.session.userpassword = req.query.pass;
-
   res.sendFile(path.join(path.join(publicPath, 'client.htm')));
 
   let { host, port } = config.ssh;
@@ -56,16 +49,13 @@ exports.connect = function connect(req, res) {
       validator.isFQDN(req.params.host) ||
       /^(([a-z]|[A-Z]|\d|[!^(){}\-_~])+)?\w$/.test(req.params.host)
     ) {
-      host = shell.exec(`facter ${req.params.host}` , {silent:true}).stdout;
-      host = host.trim();
-      console.log(`session_user=${req.session.username}, session_password=${req.session.userpassword}, host=${host}`);
+      host = req.params.host;
     }
   }
 
   if (req.method === 'POST' && req.body.username && req.body.userpassword) {
-    // req.session.username = req.body.username;
-    // req.session.userpassword = req.body.userpassword;
-    // console.log(`s-user = ${req.body.userpassword}, s-password = ${req.body.username}`);
+    req.session.username = req.body.username;
+    req.session.userpassword = req.body.userpassword;
 
     if (req.body.port && validator.isInt(`${req.body.port}`, { min: 1, max: 65535 }))
       port = req.body.port;

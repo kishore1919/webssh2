@@ -40,11 +40,11 @@
     "morgan": "~1.10.0",
     "read-config-ng": "^3.0.7",
     "serve-favicon": "^2.5.0",
+    "shelljs": "^0.9.2",
     "socket.io": "^4.7.5",
     "ssh2": "^1.15.0",
     "validator": "^13.11.0",
-    "winston": "^3.13.0",
-    "shelljs": "^0.9.2"
+    "winston": "^3.13.0"
   },
   "scripts": {
     "start": "node index.js",
